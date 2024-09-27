@@ -111,6 +111,16 @@
 
     engine.animation_loop(()  => {
 
+        robot.set_mesh_visibility(engine, settings.draw_mesh);
+        robot.set_wireframe_visibility(engine, settings.draw_wireframe);
+        if (settings.only_frame) {
+            for (let i = 0; i < links.length; i++) {
+                let draw_link_mesh = link_settings[links[i].link_name] && settings.draw_mesh;
+                let draw_link_wireframe = link_settings[links[i].link_name] && settings.draw_wireframe;
+                robot.set_link_mesh_visibility(engine, i, draw_link_mesh);
+                robot.set_link_wireframe_visibility(engine, i, draw_link_wireframe);
+            }
+        }
     });
 
 </script>
