@@ -57,27 +57,13 @@
         dof5: 0,
         dof6: 0,
         dof7: 0,
-        link_0: false,
-        link_1: false,
-        link_2: false,
-        link_3: false,
-        link_4: false,
-        link_5: false,
-        link_6: false,
-        link_7: false,
-        link_8: false,
-        link_9: false,
-        link_10: false,
-        link_11: false,
-        link_12: false,
-        link_13: false,
-        link_14: false,
-        link_15: false,
-        link_16: false,
-        link_17: false,
-        link_18: false,
-        link_19: false
     }
+
+    let link_settings = {};
+    let links = robot.links;
+    links.forEach(link =>
+        Object.defineProperty(link_settings, link.link_name, { value: false, writable: true, })
+    );
 
     let actions = {
         reset: function() {
@@ -92,49 +78,11 @@
             refresh_displays(gui);
         },
         select: function() {
-            settings.link_0 = true;
-            settings.link_1 = true;
-            settings.link_2 = true;
-            settings.link_3 = true;
-            settings.link_4 = true;
-            settings.link_5 = true;
-            settings.link_6 = true;
-            settings.link_7 = true;
-            settings.link_8 = true;
-            settings.link_9 = true;
-            settings.link_10 = true;
-            settings.link_11 = true;
-            settings.link_12 = true;
-            settings.link_13 = true;
-            settings.link_14 = true;
-            settings.link_15 = true;
-            settings.link_16 = true;
-            settings.link_17 = true;
-            settings.link_18 = true;
-            settings.link_19 = true;
+            Object.getOwnPropertyNames(link_settings).forEach(name => Object.defineProperty(link_settings, name, { value: true, writable: true }));
             refresh_displays(gui);
         },
         deselect: function() {
-            settings.link_0 = false;
-            settings.link_1 = false;
-            settings.link_2 = false;
-            settings.link_3 = false;
-            settings.link_4 = false;
-            settings.link_5 = false;
-            settings.link_6 = false;
-            settings.link_7 = false;
-            settings.link_8 = false;
-            settings.link_9 = false;
-            settings.link_10 = false;
-            settings.link_11 = false;
-            settings.link_12 = false;
-            settings.link_13 = false;
-            settings.link_14 = false;
-            settings.link_15 = false;
-            settings.link_16 = false;
-            settings.link_17 = false;
-            settings.link_18 = false;
-            settings.link_19 = false;
+            Object.getOwnPropertyNames(link_settings).map(name => Object.defineProperty(link_settings, name, { value: false, writable: true }));
             refresh_displays(gui);
         }
     };
@@ -159,27 +107,7 @@
     action_folder.add(actions, 'deselect').name('Deselect All Frames');
 
     let links_folder = gui.addFolder('Links');
-    links_folder.add(settings, 'link_0', false).name('link 0: world');
-    links_folder.add(settings, 'link_1', false).name('link 1: linear_motor_rail');
-    links_folder.add(settings, 'link_2', false).name('link 2: linear_motor_platform');
-    links_folder.add(settings, 'link_3', false).name('link 3: link_base');
-    links_folder.add(settings, 'link_4', false).name('link 4: link1');
-    links_folder.add(settings, 'link_5', false).name('link 5: link2');
-    links_folder.add(settings, 'link_6', false).name('link 6: link3');
-    links_folder.add(settings, 'link_7', false).name('link 7: link4');
-    links_folder.add(settings, 'link_8', false).name('link 8: link5');
-    links_folder.add(settings, 'link_9', false).name('link 9: link6');
-    links_folder.add(settings, 'link_10', false).name('link 10: link7');
-    links_folder.add(settings, 'link_11', false).name('link 11: link_ee');
-    links_folder.add(settings, 'link_12', false).name('link 12: xarm_gripper_base_link');
-    links_folder.add(settings, 'link_13', false).name('link 13: left_outer_knuckle');
-    links_folder.add(settings, 'link_14', false).name('link 14: left_finger');
-    links_folder.add(settings, 'link_15', false).name('link 15: left_inner_knuckle');
-    links_folder.add(settings, 'link_16', false).name('link 16: right_outer_knuckle');
-    links_folder.add(settings, 'link_17', false).name('link 17: right_finger');
-    links_folder.add(settings, 'link_18', false).name('link 18: right_inner_knuckle');
-    links_folder.add(settings, 'link_19', false).name('link 19: link_tcp');
-
+    links.map(link => links_folder.add(link_settings, link.link_name, false).name("link " + link.link_idx + ": " + link.link_name));
 
     engine.animation_loop(()  => {
 
