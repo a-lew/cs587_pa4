@@ -56,15 +56,14 @@
         draw_mesh: true,
         draw_wireframe: false,
         only_frame: false,
-        dof0: 0,
-        dof1: 0,
-        dof2: 0,
-        dof3: 0,
-        dof4: 0,
-        dof5: 0,
-        dof6: 0,
-        dof7: 0,
     }
+
+    let dof_settings = {};
+    joints.forEach(joint => {
+        if (Object.hasOwn(joint, "dof_idx")) {
+            Object.defineProperty(dof_settings, "dof" + joint.dof_idx.toString(), { value: 0.0, writable: true, });
+        }
+    });
 
     let link_settings = {};
     let links = robot.links;
@@ -74,14 +73,7 @@
 
     let actions = {
         reset: function() {
-            settings.dof0 = 0.0;
-            settings.dof1 = 0.0;
-            settings.dof2 = 0.0;
-            settings.dof3 = 0.0;
-            settings.dof4 = 0.0;
-            settings.dof5 = 0.0;
-            settings.dof6 = 0.0;
-            settings.dof7 = 0.0;
+            Object.getOwnPropertyNames(dof_settings).forEach(name => Object.defineProperty(dof_settings, name, { value: 0.0, writable: true }));
             refresh_displays(gui);
         },
         select: function() {
@@ -99,14 +91,12 @@
     gui.add(settings, 'only_frame', false).name('Display Mesh only with Frame');
 
     let dof_folder = gui.addFolder('DOFs');
-    dof_folder.add(settings, 'dof0', 0, 0.7);
-    dof_folder.add(settings, 'dof1', -2*Math.PI, 2*Math.PI);
-    dof_folder.add(settings, 'dof2', 0, 0.7);
-    dof_folder.add(settings, 'dof3', -2*Math.PI, 2*Math.PI);
-    dof_folder.add(settings, 'dof4', 0, 0.7);
-    dof_folder.add(settings, 'dof5', -2*Math.PI, 2*Math.PI);
-    dof_folder.add(settings, 'dof6', 0, Math.PI);
-    dof_folder.add(settings, 'dof7', -2*Math.PI, 2*Math.PI);
+    joints.forEach(joint => {
+        if (Object.hasOwn(joint, "dof_idx")) {
+            dof_folder.add(dof_settings, "dof" + joint.dof_idx.toString(), joint.lower_bound, joint.upper_bound);
+        }
+    });
+    console.log(dof_settings);
 
     let action_folder = gui.addFolder('Actions');
     action_folder.add(actions, 'reset').name('Reset');
@@ -200,14 +190,14 @@
 
     engine.animation_loop(()  => {
 
-        let state = [settings.dof0,
-                     settings.dof1,
-                     settings.dof2,
-                     settings.dof3,
-                     settings.dof4,
-                     settings.dof5,
-                     settings.dof6,
-                     settings.dof7];
+        let state = [dof_settings.dof0,
+                     dof_settings.dof1,
+                     dof_settings.dof2,
+                     dof_settings.dof3,
+                     dof_settings.dof4,
+                     dof_settings.dof5,
+                     dof_settings.dof6,
+                     dof_settings.dof7];
         let outputs = forward_kinematics(state);
 
         for (let i = 0; i < links.length; i++) {
